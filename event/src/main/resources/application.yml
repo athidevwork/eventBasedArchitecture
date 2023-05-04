@@ -1,7 +1,17 @@
-server:
-  port:
-    8083
 spring:
   application:
     name:
       EventApi
+server:
+  host:
+    event
+    #0.0.0.0
+  port:
+    8083
+---
+spring:
+  profiles: dev
+  application:
+    name: EventApi-Dev
+server:
+  port: 8083

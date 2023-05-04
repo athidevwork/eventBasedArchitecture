@@ -42,8 +42,8 @@ public class OrderController {
 
         String jsonStr = gson.toJson(order);
         APIUtil.callRestApi("Order", "Bill", jsonStr);
-        //APIUtil.callRestApi("Report", order);
-        //APIUtil.callRestApi("Notify", order);
+        APIUtil.callRestApi("Order", "Report", jsonStr);
+        APIUtil.callRestApi("Order", "Notify", jsonStr);
         return ResponseEntity.ok(orderCreated);
     }
 

@@ -1,7 +1,19 @@
-server:
-  port:
-    8086
 spring:
   application:
     name:
-      BillApi
+      BillingApi
+server:
+  host:
+    0.0.0.0
+  port:
+    8086
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  #profiles: dev
+  application:
+    name: BillingApi-Dev
+server:
+  port: 8086

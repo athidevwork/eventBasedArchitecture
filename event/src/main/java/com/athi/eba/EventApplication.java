@@ -9,17 +9,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.event.EventListener;
-import org.springframework.web.client.RestTemplate;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 @SpringBootApplication
 public class EventApplication {
 
 	@Value("${spring.application.name}")
-	private String appName;
+	private String serverName;
+
+	@Value("${server.host:}")
+	private String serverHost;
 	@Value("${server.port}")
-	private String appPort;
+	private String serverPort;
 
 	@Autowired
 	private EventService eventService;
@@ -30,11 +34,13 @@ public class EventApplication {
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
-	public void afterInit() {
-		//System.out.println ("TESTING - com.athi.eba.EventApplication started at - " + appName + ":" + appPort);
-		logger.debug ("com.athi.eba.EventApplication started at - " + appName + ":" + appPort);
+	public void afterInit() throws UnknownHostException {
+		InetAddress localhost = InetAddress.getLocalHost();
+		String ipAddress = localhost.getHostAddress();
+		logger.debug ("IP Address: " + ipAddress);
+		logger.debug (EventApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
 		Event event = Event.builder().eventName("EventService").objectType("Event").eventName("Event Service Started")
-						.contextId("0").payload(appName + ":" + appPort + " Started.").build();
+						.contextId("0").payload(serverName + ":" + serverPort + " Started.").build();
 		eventService.createEvent(event);
 	}
 

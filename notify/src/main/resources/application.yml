@@ -1,12 +1,13 @@
 spring:
   application:
     name:
-      PaymentApi
+      NotificationApi
 server:
   host:
-    0.0.0.0
+    notify
+    #0.0.0.0
   port:
-    8085
+    8088
 ---
 spring:
   config:
@@ -14,6 +15,6 @@ spring:
       on-profile: dev
   #profiles: dev
   application:
-    name: PaymentApi-Dev
+    name: NotificationApi-Dev
 server:
-  port: 8085
+  port: 8088

@@ -36,6 +36,8 @@ public class PaymentController {
 
         String jsonStr = gson.toJson(payment);
         APIUtil.callRestApi("Payment", "Bill", jsonStr);
+        APIUtil.callRestApi("Payment", "Report", jsonStr);
+        APIUtil.callRestApi("Payment", "Notify", jsonStr);
 
         return ResponseEntity.ok(paymentCreated);
     }

@@ -16,9 +16,12 @@ import org.springframework.context.event.EventListener;
 public class BillApplication {
 
 	@Value("${spring.application.name}")
-	private String appName;
+	private String serverName;
+
+	@Value("${server.host}")
+	private String serverHost;
 	@Value("${server.port}")
-	private String appPort;
+	private String serverPort;
 
 	private static final Logger logger = LoggerFactory.getLogger(BillApplication.class);
 	public static void main(String[] args) {
@@ -27,17 +30,17 @@ public class BillApplication {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void afterInit() throws JsonProcessingException {
-		logger.debug ("Bill Application started at - " + appName + ":" + appPort);
+		logger.debug (BillApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
 		Event event = Event.builder().eventName("Billing Service Started").contextId("0").objectType("Bill")
-				.payload(appName + ":" + appPort + " Started.").build();
+				.payload(serverName + ":" + serverPort + " Started.").build();
 		EventUtil.sendEvent(event);
 	}
 
 	@PreDestroy
 	public void onExit() throws JsonProcessingException {
-		logger.debug ("Bill Application shutdown at - " + appName + ":" + appPort);
+		logger.debug ("Bill Application shutdown at - " + serverName + ":" + serverPort);
 		Event event = Event.builder().eventName("Bill Service Shutdown").contextId("0").objectType("Bill")
-				.payload(appName + ":" + appPort + " Shutdown.").build();
+				.payload(serverName + ":" + serverPort + " Shutdown.").build();
 		EventUtil.sendEvent(event);
 	}
 }

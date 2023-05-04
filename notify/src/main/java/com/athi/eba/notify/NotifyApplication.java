@@ -1,4 +1,4 @@
-package com.athi.eba.order;
+package com.athi.eba.notify;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PreDestroy;
@@ -13,33 +13,33 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 @SpringBootApplication
-public class OrderApplication {
+public class NotifyApplication {
 
 	@Value("${spring.application.name}")
 	private String serverName;
 
-	@Value("${server.host}")
+	@Value("${server.host:}")
 	private String serverHost;
 	@Value("${server.port}")
 	private String serverPort;
 
-	private static final Logger logger = LoggerFactory.getLogger(OrderApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(NotifyApplication.class);
 	public static void main(String[] args) {
-		SpringApplication.run(OrderApplication.class, args);
+		SpringApplication.run(NotifyApplication.class, args);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void afterInit() throws JsonProcessingException {
-		logger.debug (OrderApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
-		Event event = Event.builder().eventName("Order Service Started").contextId("0").objectType("Order")
+		logger.debug (NotifyApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
+		Event event = Event.builder().eventName("Notification Service Started").contextId("0").objectType("Notification")
 				.payload(serverName + ":" + serverPort + " Started.").build();
 		EventUtil.sendEvent(event);
 	}
 
 	@PreDestroy
 	public void onExit() throws JsonProcessingException {
-		logger.debug ("Order Application shutdown at - " + serverName + ":" + serverPort);
-		Event event = Event.builder().eventName("Order Service Shutdown").contextId("0").objectType("Order")
+		logger.debug ("Notification Application shutdown at - " + serverName + ":" + serverPort);
+		Event event = Event.builder().eventName("Notification Service Shutdown").contextId("0").objectType("Notification")
 				.payload(serverName + ":" + serverPort + " Shutdown.").build();
 		EventUtil.sendEvent(event);
 	}

@@ -4,15 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
-import org.athi.eba.model.Bill;
-import org.athi.eba.model.Order;
-import org.athi.eba.model.Payment;
+import org.athi.eba.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 public class APIUtil {
     private static final Logger logger = LoggerFactory.getLogger(APIUtil.class);
@@ -37,22 +38,30 @@ public class APIUtil {
             case "Bill":
                 apiUrl = "http://localhost:8086/api/bill/createBill";
                 break;
+            case "Report":
+                apiUrl = "http://localhost:8087/api/report/createReport";
+                break;
+            case "Notify":
+                apiUrl = "http://localhost:8088/api/notify/createNotify";
+                break;
             default:
                 logger.debug("Default API url - not handled.");
+                break;
         }
 
+        System.out.println("url = " + apiUrl);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
         HttpEntity<String> request =
                 new HttpEntity<String>(jsonStr, headers);
         System.out.println("jsonStr = " + jsonStr);
-        String resultAsJsonStr =
-                restTemplate.postForObject(apiUrl, request, String.class);
+        System.out.println("-----Connecting to  = " + apiUrl + "-------");
+        String resultAsJsonStr = restTemplate.postForObject(apiUrl, request, String.class);
         System.out.println("resultAsJsonStr = " + resultAsJsonStr);
         JsonNode root = objectMapper.readTree(resultAsJsonStr);
-        logger.debug ("root = " + root.path("name").asText());
-        logger.debug("root = " + root);
+        System.out.println ("root = " + root.path("name").asText());
+        System.out.println("root = " + root);
     }
 
     private static String getCallerJsonStr(String srcApi, String destApi, String jsonStr) {
@@ -73,7 +82,7 @@ public class APIUtil {
 
         if (destApi.equals("Bill")) {
             if (type.equals("order")) {
-                Bill bill = Bill.builder().customerName(order.getCustomerName())
+                Bill bill = Bill.builder().customerName(order.getCustomerName()).paymentNumber("0").paymentAmount(BigDecimal.valueOf(0.00))
                             .orderNumber(order.getOrderId().toString()).orderAmount(order.getTotalAmount()).build();
                 jsonStr = gson.toJson(bill);
             }
@@ -82,6 +91,32 @@ public class APIUtil {
                         .paymentNumber(payment.getPaymentId().toString()).orderAmount(payment.getOrderAmount())
                         .paymentAmount(payment.getPaymentAmount()).build();
                 jsonStr = gson.toJson(bill);
+            }
+        }
+        if (destApi.equals("Report")) {
+            if (type.equals("order")) {
+                Report report = Report.builder().customerName(order.getCustomerName()).paymentNumber("0").paymentAmount(BigDecimal.valueOf(0.00))
+                        .orderNumber(order.getOrderId().toString()).orderAmount(order.getTotalAmount()).build();
+                jsonStr = gson.toJson(report);
+            }
+            else {
+                Report bill = Report.builder().customerName(payment.getCustomerName()).orderNumber(payment.getOrderNumber())
+                        .paymentNumber(payment.getPaymentId().toString()).orderAmount(payment.getOrderAmount())
+                        .paymentAmount(payment.getPaymentAmount()).build();
+                jsonStr = gson.toJson(bill);
+            }
+        }
+        if (destApi.equals("Notify")) {
+            if (type.equals("order")) {
+                Notify notify = Notify.builder().customerName(order.getCustomerName()).paymentNumber("0").paymentAmount(BigDecimal.valueOf(0.00))
+                        .orderNumber(order.getOrderId().toString()).orderAmount(order.getTotalAmount()).build();
+                jsonStr = gson.toJson(notify);
+            }
+            else {
+                Notify notify = Notify.builder().customerName(payment.getCustomerName()).orderNumber(payment.getOrderNumber())
+                        .paymentNumber(payment.getPaymentId().toString()).orderAmount(payment.getOrderAmount())
+                        .paymentAmount(payment.getPaymentAmount()).build();
+                jsonStr = gson.toJson(notify);
             }
         }
 

@@ -1,4 +1,4 @@
-package com.athi.eba.order;
+package com.athi.eba.report;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PreDestroy;
@@ -13,7 +13,7 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
 @SpringBootApplication
-public class OrderApplication {
+public class ReportApplication {
 
 	@Value("${spring.application.name}")
 	private String serverName;
@@ -23,23 +23,23 @@ public class OrderApplication {
 	@Value("${server.port}")
 	private String serverPort;
 
-	private static final Logger logger = LoggerFactory.getLogger(OrderApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportApplication.class);
 	public static void main(String[] args) {
-		SpringApplication.run(OrderApplication.class, args);
+		SpringApplication.run(ReportApplication.class, args);
 	}
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void afterInit() throws JsonProcessingException {
-		logger.debug (OrderApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
-		Event event = Event.builder().eventName("Order Service Started").contextId("0").objectType("Order")
+		logger.debug (ReportApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
+		Event event = Event.builder().eventName("Reporting Service Started").contextId("0").objectType("Report")
 				.payload(serverName + ":" + serverPort + " Started.").build();
 		EventUtil.sendEvent(event);
 	}
 
 	@PreDestroy
 	public void onExit() throws JsonProcessingException {
-		logger.debug ("Order Application shutdown at - " + serverName + ":" + serverPort);
-		Event event = Event.builder().eventName("Order Service Shutdown").contextId("0").objectType("Order")
+		logger.debug ("Reporting Application shutdown at - " + serverName + ":" + serverPort);
+		Event event = Event.builder().eventName("Reporting Service Shutdown").contextId("0").objectType("Report")
 				.payload(serverName + ":" + serverPort + " Shutdown.").build();
 		EventUtil.sendEvent(event);
 	}

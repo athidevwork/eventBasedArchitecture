@@ -16,9 +16,12 @@ import org.springframework.context.event.EventListener;
 public class PaymentApplication {
 
 	@Value("${spring.application.name}")
-	private String appName;
+	private String serverName;
+
+	@Value("${server.host}")
+	private String serverHost;
 	@Value("${server.port}")
-	private String appPort;
+	private String serverPort;
 
 	private static final Logger logger = LoggerFactory.getLogger(PaymentApplication.class);
 	public static void main(String[] args) {
@@ -27,17 +30,17 @@ public class PaymentApplication {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void afterInit() throws JsonProcessingException {
-		logger.debug ("Payment Application started at - " + appName + ":" + appPort);
+		logger.debug (PaymentApplication.class.getName() + " started at - " + serverName + ":" + serverPort + ", host = " + serverHost);
 		Event event = Event.builder().eventName("Payment Service Started").contextId("0").objectType("Payment")
-				.payload(appName + ":" + appPort + " Started.").build();
+				.payload(serverName + ":" + serverPort + " Started.").build();
 		EventUtil.sendEvent(event);
 	}
 
 	@PreDestroy
 	public void onExit() throws JsonProcessingException {
-		logger.debug ("Payment Application shutdown at - " + appName + ":" + appPort);
+		logger.debug ("Payment Application shutdown at - " + serverName + ":" + serverPort);
 		Event event = Event.builder().eventName("Payment Service Shutdown").contextId("0").objectType("Payment")
-				.payload(appName + ":" + appPort + " Shutdown.").build();
+				.payload(serverName + ":" + serverPort + " Shutdown.").build();
 		EventUtil.sendEvent(event);
 	}
 }
